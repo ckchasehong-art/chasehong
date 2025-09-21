@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일본어 퀴즈</title>
+    <style>
+        :root {
+            --background-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg-color: #ffffff;
+            --button-bg-color: #ffffff;
+            --button-hover-bg-color: #f1f3f5;
+            --accent-color: #007bff;
+            --border-color: #dee2e6;
+            --disabled-bg-color: #e9ecef;
+            --disabled-text-color: #adb5bd;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .screen-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .top-bar-button {
+            padding: 0.75rem;
+            background-color: var(--disabled-bg-color);
+            border-radius: 9999px;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .top-bar-button:hover {
+            background-color: #ced4da;
+        }
+        .top-bar-button svg {
+             color: var(--text-color);
+        }
+        .question-box {
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        .question-label {
+            font-size: 7rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .quiz-button {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background-color: var(--button-bg-color);
+            border-radius: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .quiz-button:hover {
+            background-color: var(--button-hover-bg-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+        .quiz-button:disabled {
+            background-color: var(--disabled-bg-color);
+            color: var(--disabled-text-color);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 1;
+        }
+        .quiz-button.correct {
+            background-color: var(--accent-color);
+            color: var(--card-bg-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+        .score-label {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .mode-label {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .current-mode-info {
+            font-size: 1.125rem;
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="main_content"></div>
+
+    <script>
+        const quizzes = {
+            'hiragana': {
+                'あ': '아', 'い': '이', 'う': '우', 'え': '에', 'お': '오',
+                'か': '카', 'き': '키', 'く': '쿠', 'け': '케', 'こ': '코',
+                'さ': '사', 'し': '시', 'す': '스', 'せ': '세', 'そ': '소',
+                'た': '타', 'ち': '치', 'つ': '츠', 'て': '테', 'と': '토',
+                'な': '나', 'に': '니', 'ぬ': '누', 'ね': '네', 'の': '노',
+                'は': '하', 'ひ': '히', 'ふ': '후', 'へ': '헤', 'ほ': '호',
+                'ま': '마', 'み': '미', 'む': '무', 'め': '메', 'も': '모',
+                'や': '야', 'ゆ': '유', 'よ': '요',
+                'ら': '라', 'り': '리', 'る': '루', 'れ': '레', 'ろ': '로',
+                'わ': '와', 'を': '오', 'ん': '응',
+            },
+            'katakana': {
+                'ア': '아', 'イ': '이', 'ウ': '우', 'エ': '에', 'オ': '오',
+                'カ': '카', 'キ': '키', 'ク': '쿠', 'ケ': '케', 'コ': '코',
+                'サ': '사', 'シ': '시', 'ス': '스', 'セ': '세', 'ソ': '소',
+                'タ': '타', 'チ': '치', 'ツ': '츠', 'テ': '테', 'ト': '토',
+                'ナ': '나', 'ニ': '니', 'ヌ': '누', 'ネ': '네', 'ノ': '노',
+                'ハ': '하', 'ヒ': '히', 'フ': '후', 'ヘ': '헤', 'ホ': '호',
+                'マ': '마', 'ミ': '미', 'ム': '무', 'メ': '메', 'モ': '모',
+                'ヤ': '야', 'ユ': '유', 'ヨ': '요',
+                'ラ': '라', 'リ': '리', 'ル': '루', 'レ': '레', 'ロ': '로',
+                'ワ': '와', 'ヲ': '오', 'ン': '응',
+            },
+            'advanced': {
+                'が': '가', 'ぎ': '기', 'ぐ': '구', 'げ': '게', 'ご': '고',
+                'ざ': '자', 'じ': '지', 'ず': '즈', 'ぜ': '제', 'ぞ': '조',
+                'だ': '다', 'ぢ': '지', 'づ': '즈', 'で': '데', 'ど': '도',
+                'ば': '바', 'び': '비', 'ぶ': '부', 'べ': '베', 'ぼ': '보',
+                'ぱ': '파', 'ぴ': '피', 'ぷ': '푸', 'ぺ': '페', 'ぽ': '포',
+                'きゃ': '캬', 'きゅ': '큐', 'きょ': '쿄',
+                'しゃ': '샤', 'しゅ': '슈', 'しょ': '쇼',
+                'ちゃ': '챠', 'ちゅ': '츄', 'ちょ': '쵸',
+                'にゃ': '냐', 'にゅ': '뉴', 'にょ': '뇨',
+                'ひゃ': '햐', 'ひゅ': '휴', 'ひょ': '효',
+                'みゃ': '먀', 'みゅ': '뮤', 'みょ': '묘',
+                'りゃ': '랴', 'りゅ': '류', 'りょ': '료',
+                'っ': '촉음', 'ー': '장음',
+            }
+        };
+
+        let currentQuizType = "";
+        let currentQuizMode = "japanese_to_pronunciation"; // or "pronunciation_to_japanese"
+        let currentChar = "";
+        let score = 0;
+        let unseenChars = [];
+
+        // Fisher-Yates shuffle algorithm
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        // Get unique random samples from an array
+        function sample(array, count) {
+            const shuffled = [...array];
+            shuffle(shuffled);
+            return shuffled.slice(0, count);
+        }
+
+        function showMenu() {
+            const mainContent = document.getElementById('main_content');
+            const modeText = currentQuizMode === "japanese_to_pronunciation" ? "일본어 → 발음" : "발음 → 일본어";
+
+            mainContent.innerHTML = `
+                <div class="screen-container">
+                    <h1 style="font-size: 1.875rem; font-weight: bold; margin-bottom: 1rem;">원하는 퀴즈를 선택하세요</h1>
+                    <p class="current-mode-info">현재 모드: ${modeText}</p>
+                    <div class="menu-buttons">
+                        <button onclick="startQuiz('hiragana')" class="quiz-button">히라가나</button>
+                        <button onclick="startQuiz('katakana')" class="quiz-button">가타카나</button>
+                        <button onclick="startQuiz('advanced')" class="quiz-button">탁음, 요음, 촉음 등</button>
+                        <button onclick="switchMode()" class="quiz-button" style="margin-top: 1rem; background-color: #e9ecef;">모드 전환</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showMainQuizUI() {
+            const mainContent = document.getElementById('main_content');
+            mainContent.innerHTML = `
+                <div id="main_box" class="main-container">
+                    <div class="top-bar">
+                        <button onclick="showMenu()" class="top-bar-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <span class="mode-label" id="mode_label"></span>
+                        <span id="score_label" class="score-label">✅ 0</span>
+                    </div>
+                    
+                    <div class="question-box">
+                        <span id="question_label" class="question-label"></span>
+                    </div>
+                    
+                    <div class="buttons-grid" id="buttons-grid">
+                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
+                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
+                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
+                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
+                    </div>
+
+                    <div style="text-align: center; height: 2rem;">
+                        <span id="result_label" style="font-size: 1.25rem; font-weight: 600;"></span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateModeLabel() {
+            const modeLabel = document.getElementById('mode_label');
+            if (currentQuizMode === "japanese_to_pronunciation") {
+                modeLabel.textContent = "일본어 → 발음";
+            } else {
+                modeLabel.textContent = "발음 → 일본어";
+            }
+        }
+
+        function startQuiz(quizType) {
+            currentQuizType = quizType;
+            score = 0;
+            unseenChars = [];
+            showMainQuizUI();
+            updateModeLabel();
+            nextQuiz();
+        }
+
+        function nextQuiz() {
+            const quizData = quizzes[currentQuizType];
+            
+            if (unseenChars.length === 0) {
+                unseenChars = Object.keys(quizData);
+                shuffle(unseenChars);
+            }
+            
+            currentChar = unseenChars.shift(); // Get and remove the first character
+            
+            let questionText, correctAnswer, allOptions;
+
+            if (currentQuizMode === "japanese_to_pronunciation") {
+                questionText = currentChar;
+                correctAnswer = quizData[currentChar];
+                allOptions = Object.values(quizzes[currentQuizType]);
+            } else {
+                questionText = quizData[currentChar];
+                correctAnswer = currentChar;
+                allOptions = Object.keys(quizzes[currentQuizType]);
+            }
+             
+            document.getElementById('question_label').textContent = questionText;
+
+            const incorrectOptions = allOptions.filter(opt => opt !== correctAnswer);
+            const incorrectAnswers = sample(incorrectOptions, 3);
+            
+            const answerOptions = [...incorrectAnswers, correctAnswer];
+            shuffle(answerOptions);
+            
+            const answerButtons = document.getElementById('buttons-grid').children;
+            for (let i = 0; i < answerButtons.length; i++) {
+                const button = answerButtons[i];
+                button.textContent = answerOptions[i];
+                button.className = 'quiz-button'; // Reset classes
+                button.disabled = false;
+            }
+            
+            document.getElementById('result_label').textContent = "";
+        }
+
+        function checkAnswer(button) {
+            const quizData = quizzes[currentQuizType];
+            const userAnswer = button.textContent;
+            
+            const correctAnswer = currentQuizMode === "japanese_to_pronunciation" 
+                ? quizData[currentChar] 
+                : currentChar;
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                document.getElementById('score_label').textContent = `✅ ${score}`;
+                button.classList.add('correct');
+
+                // 정답을 맞췄으므로 모든 버튼을 비활성화합니다.
+                const allButtons = document.getElementById('buttons-grid').children;
+                for(let btn of allButtons) {
+                    btn.disabled = true;
+                }
+                // 잠시 후 다음 문제로 넘어갑니다.
+                setTimeout(nextQuiz, 1000); 
+            } else {
+                // 오답인 경우, 해당 버튼만 비활성화하고 붉은색 표시는 하지 않습니다.
+                // 사용자는 정답을 찾을 때까지 계속 시도해야 합니다.
+                button.disabled = true;
+            }
+        }
+
+        function switchMode() {
+            currentQuizMode = currentQuizMode === "japanese_to_pronunciation" 
+                ? "pronunciation_to_japanese" 
+                : "japanese_to_pronunciation";
+            showMenu(); // Re-render menu to show the updated mode
+        }
+
+        // Initial call to show the main menu
+        showMenu();
+    </script>
+</body>
+</html>
+
