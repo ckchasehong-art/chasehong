@@ -309,7 +309,8 @@
             }
              
             const questionLabel = document.getElementById('question_label');
-            questionLabel.textContent = questionText;
+            questionLabel.innerHTML = `<span class="question-label">${questionText}</span>`;
+
 
             const incorrectOptions = allOptions.filter(opt => opt !== correctAnswer);
             const incorrectAnswers = sample(incorrectOptions, 3);
@@ -364,7 +365,7 @@
 
                 document.getElementById('buttons-grid').style.display = 'none';
 
-                setTimeout(nextQuiz, 2000); 
+                setTimeout(nextQuiz, 800); // 1.2초에서 0.8초로 변경
             } else {
                 button.disabled = true;
             }
