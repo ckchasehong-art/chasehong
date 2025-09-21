@@ -106,6 +106,19 @@
             font-weight: bold;
             text-align: center;
         }
+        .question-box.answered-box {
+            flex-direction: column;
+        }
+        .answered-char {
+            font-size: 6rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        .answered-pronunciation {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
         .buttons-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -131,6 +144,8 @@
             transition: all 0.2s ease;
             border: 1px solid var(--border-color);
             cursor: pointer;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
         }
         .quiz-button:hover {
             background-color: var(--button-hover-bg-color);
@@ -173,53 +188,22 @@
     <script>
         const quizzes = {
             'hiragana': {
-                'あ': '아', 'い': '이', 'う': '우', 'え': '에', 'お': '오',
-                'か': '카', 'き': '키', 'く': '쿠', 'け': '케', 'こ': '코',
-                'さ': '사', 'し': '시', 'す': '스', 'せ': '세', 'そ': '소',
-                'た': '타', 'ち': '치', 'つ': '츠', 'て': '테', 'と': '토',
-                'な': '나', 'に': '니', 'ぬ': '누', 'ね': '네', 'の': '노',
-                'は': '하', 'ひ': '히', 'ふ': '후', 'へ': '헤', 'ほ': '호',
-                'ま': '마', 'み': '미', 'む': '무', 'め': '메', 'も': '모',
-                'や': '야', 'ゆ': '유', 'よ': '요',
-                'ら': '라', 'り': '리', 'る': '루', 'れ': '레', 'ろ': '로',
-                'わ': '와', 'を': '오', 'ん': '응',
+                'あ': '아', 'い': '이', 'う': '우', 'え': '에', 'お': '오', 'か': '카', 'き': '키', 'く': '쿠', 'け': '케', 'こ': '코', 'さ': '사', 'し': '시', 'す': '스', 'せ': '세', 'そ': '소', 'た': '타', 'ち': '치', 'つ': '츠', 'て': '테', 'と': '토', 'な': '나', 'に': '니', 'ぬ': '누', 'ね': '네', 'の': '노', 'は': '하', 'ひ': '히', 'ふ': '후', 'へ': '헤', 'ほ': '호', 'ま': '마', 'み': '미', 'む': '무', 'め': '메', 'も': '모', 'や': '야', 'ゆ': '유', 'よ': '요', 'ら': '라', 'り': '리', 'る': '루', 'れ': '레', 'ろ': '로', 'わ': '와', 'を': '오', 'ん': '응',
             },
             'katakana': {
-                'ア': '아', 'イ': '이', 'ウ': '우', 'エ': '에', 'オ': '오',
-                'カ': '카', 'キ': '키', 'ク': '쿠', 'ケ': '케', 'コ': '코',
-                'サ': '사', 'シ': '시', 'ス': '스', 'セ': '세', 'ソ': '소',
-                'タ': '타', 'チ': '치', 'ツ': '츠', 'テ': '테', 'ト': '토',
-                'ナ': '나', 'ニ': '니', 'ヌ': '누', 'ネ': '네', 'ノ': '노',
-                'ハ': '하', 'ヒ': '히', 'フ': '후', 'ヘ': '헤', 'ホ': '호',
-                'マ': '마', 'ミ': '미', 'ム': '무', 'メ': '메', 'モ': '모',
-                'ヤ': '야', 'ユ': '유', 'ヨ': '요',
-                'ラ': '라', 'リ': '리', 'ル': '루', 'レ': '레', 'ロ': '로',
-                'ワ': '와', 'ヲ': '오', 'ン': '응',
+                'ア': '아', 'イ': '이', 'ウ': '우', 'エ': '에', 'オ': '오', 'カ': '카', 'キ': '키', 'ク': '쿠', 'ケ': '케', 'コ': '코', 'サ': '사', 'シ': '시', 'ス': '스', 'セ': '세', 'ソ': '소', 'タ': '타', 'チ': '치', 'ツ': '츠', 'テ': '테', 'ト': '토', 'ナ': '나', 'ニ': '니', 'ヌ': '누', 'ネ': '네', 'ノ': '노', 'ハ': '하', 'ヒ': '히', 'フ': '후', 'ヘ': '헤', 'ホ': '호', 'マ': '마', 'ミ': '미', 'ム': '무', 'メ': '메', 'モ': '모', 'ヤ': '야', 'ユ': '유', 'ヨ': '요', 'ラ': '라', 'リ': '리', 'ル': '루', 'レ': '레', 'ロ': '로', 'ワ': '와', 'ヲ': '오', 'ン': '응',
             },
             'advanced': {
-                'が': '가', 'ぎ': '기', 'ぐ': '구', 'げ': '게', 'ご': '고',
-                'ざ': '자', 'じ': '지', 'ず': '즈', 'ぜ': '제', 'ぞ': '조',
-                'だ': '다', 'ぢ': '지', 'づ': '즈', 'で': '데', 'ど': '도',
-                'ば': '바', 'び': '비', 'ぶ': '부', 'べ': '베', 'ぼ': '보',
-                'ぱ': '파', 'ぴ': '피', 'ぷ': '푸', 'ぺ': '페', 'ぽ': '포',
-                'きゃ': '캬', 'きゅ': '큐', 'きょ': '쿄',
-                'しゃ': '샤', 'しゅ': '슈', 'しょ': '쇼',
-                'ちゃ': '챠', 'ちゅ': '츄', 'ちょ': '쵸',
-                'にゃ': '냐', 'にゅ': '뉴', 'にょ': '뇨',
-                'ひゃ': '햐', 'ひゅ': '휴', 'ひょ': '효',
-                'みゃ': '먀', 'みゅ': '뮤', 'みょ': '묘',
-                'りゃ': '랴', 'りゅ': '류', 'りょ': '료',
-                'っ': '촉음', 'ー': '장음',
+                'が': '가', 'ぎ': '기', 'ぐ': '구', 'げ': '게', 'ご': '고', 'ざ': '자', 'じ': '지', 'ず': '즈', 'ぜ': '제', 'ぞ': '조', 'だ': '다', 'ぢ': '지', 'づ': '즈', 'で': '데', 'ど': '도', 'ば': '바', 'び': '비', 'ぶ': '부', 'べ': '베', 'ぼ': '보', 'ぱ': '파', 'ぴ': '피', 'ぷ': '푸', 'ぺ': '페', 'ぽ': '포', 'きゃ': '캬', 'きゅ': '큐', 'きょ': '쿄', 'しゃ': '샤', 'しゅ': '슈', 'しょ': '쇼', 'ちゃ': '챠', 'ちゅ': '츄', 'ちょ': '쵸', 'にゃ': '냐', 'にゅ': '뉴', 'にょ': '뇨', 'ひゃ': '햐', 'ひゅ': '휴', 'ひょ': '효', 'みゃ': '먀', 'みゅ': '뮤', 'みょ': '묘', 'りゃ': '랴', 'りゅ': '류', 'りょ': '료', 'っ': '촉음', 'ー': '장음',
             }
         };
 
         let currentQuizType = "";
-        let currentQuizMode = "japanese_to_pronunciation"; // or "pronunciation_to_japanese"
+        let currentQuizMode = "japanese_to_pronunciation";
         let currentChar = "";
         let score = 0;
         let unseenChars = [];
 
-        // Fisher-Yates shuffle algorithm
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -227,7 +211,6 @@
             }
         }
         
-        // Get unique random samples from an array
         function sample(array, count) {
             const shuffled = [...array];
             shuffle(shuffled);
@@ -259,7 +242,7 @@
                 <div id="main_box" class="main-container">
                     <div class="top-bar">
                         <button onclick="showMenu()" class="top-bar-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
@@ -272,10 +255,7 @@
                     </div>
                     
                     <div class="buttons-grid" id="buttons-grid">
-                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
-                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
-                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
-                        <button onclick="checkAnswer(this)" class="quiz-button"></button>
+                        <!-- Buttons will be generated by JavaScript -->
                     </div>
 
                     <div style="text-align: center; height: 2rem;">
@@ -306,6 +286,9 @@
         function nextQuiz() {
             const quizData = quizzes[currentQuizType];
             
+            const questionBox = document.querySelector('.question-box');
+            questionBox.classList.remove('answered-box');
+
             if (unseenChars.length === 0) {
                 unseenChars = Object.keys(quizData);
                 shuffle(unseenChars);
@@ -325,7 +308,8 @@
                 allOptions = Object.keys(quizzes[currentQuizType]);
             }
              
-            document.getElementById('question_label').textContent = questionText;
+            const questionLabel = document.getElementById('question_label');
+            questionLabel.textContent = questionText;
 
             const incorrectOptions = allOptions.filter(opt => opt !== correctAnswer);
             const incorrectAnswers = sample(incorrectOptions, 3);
@@ -333,18 +317,18 @@
             const answerOptions = [...incorrectAnswers, correctAnswer];
             shuffle(answerOptions);
             
-            const answerButtons = document.querySelectorAll('#buttons-grid button');
-            
-            answerButtons.forEach((button, i) => {
-                // Reset the button to its default state before applying new content
+            const buttonsGrid = document.getElementById('buttons-grid');
+            buttonsGrid.innerHTML = ''; // Clear all old buttons
+
+            answerOptions.forEach(optionText => {
+                const button = document.createElement('button');
                 button.className = 'quiz-button';
-                button.disabled = false;
-                
-                if (answerOptions[i]) {
-                    button.textContent = answerOptions[i];
-                }
+                button.textContent = optionText;
+                button.onclick = function() { checkAnswer(this); };
+                buttonsGrid.appendChild(button);
             });
             
+            buttonsGrid.style.display = 'grid'; 
             document.getElementById('result_label').textContent = "";
         }
 
@@ -365,8 +349,22 @@
                 allButtons.forEach(btn => {
                     btn.disabled = true;
                 });
+                
+                const questionBox = document.querySelector('.question-box');
+                const questionLabel = document.getElementById('question_label');
 
-                setTimeout(nextQuiz, 1000); 
+                const japaneseChar = (currentQuizMode === "japanese_to_pronunciation") ? currentChar : correctAnswer;
+                const pronunciation = (currentQuizMode === "japanese_to_pronunciation") ? correctAnswer : quizData[currentChar];
+                
+                questionBox.classList.add('answered-box');
+                questionLabel.innerHTML = `
+                    <div class="answered-char">${japaneseChar}</div>
+                    <div class="answered-pronunciation">${pronunciation}</div>
+                `;
+
+                document.getElementById('buttons-grid').style.display = 'none';
+
+                setTimeout(nextQuiz, 2000); 
             } else {
                 button.disabled = true;
             }
@@ -376,10 +374,9 @@
             currentQuizMode = currentQuizMode === "japanese_to_pronunciation" 
                 ? "pronunciation_to_japanese" 
                 : "japanese_to_pronunciation";
-            showMenu(); // Re-render menu to show the updated mode
+            showMenu();
         }
 
-        // Initial call to show the main menu
         showMenu();
     </script>
 </body>
