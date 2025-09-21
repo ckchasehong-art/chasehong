@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>일본어 퀴즈</title>
     <style>
         :root {
@@ -33,16 +33,36 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 1.5rem;
             box-sizing: border-box;
             text-align: center;
+            padding-top: calc(1.5rem + env(safe-area-inset-top, 0px));
+            padding-right: calc(1.5rem + env(safe-area-inset-right, 0px));
+            padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+            padding-left: calc(1.5rem + env(safe-area-inset-left, 0px));
         }
         .main-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding: 1rem;
             box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 1rem);
+            padding-right: env(safe-area-inset-right, 1rem);
+            padding-bottom: env(safe-area-inset-bottom, 1rem);
+            padding-left: env(safe-area-inset-left, 1rem);
+        }
+        .app-icon {
+            font-size: 3rem;
+            width: 80px;
+            height: 80px;
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
         .top-bar {
             display: flex;
@@ -220,6 +240,7 @@
 
             mainContent.innerHTML = `
                 <div class="screen-container">
+                    <div class="app-icon">あ</div>
                     <h1 style="font-size: 1.875rem; font-weight: bold; margin-bottom: 1rem;">원하는 퀴즈를 선택하세요</h1>
                     <p class="current-mode-info">현재 모드: ${modeText}</p>
                     <div class="menu-buttons">
@@ -290,7 +311,7 @@
                 shuffle(unseenChars);
             }
             
-            currentChar = unseenChars.shift(); // Get and remove the first character
+            currentChar = unseenChars.shift();
             
             let questionText, correctAnswer, allOptions;
 
@@ -312,13 +333,17 @@
             const answerOptions = [...incorrectAnswers, correctAnswer];
             shuffle(answerOptions);
             
-            const answerButtons = document.getElementById('buttons-grid').children;
-            for (let i = 0; i < answerButtons.length; i++) {
-                const button = answerButtons[i];
-                button.textContent = answerOptions[i];
-                button.className = 'quiz-button'; // Reset classes
+            const answerButtons = document.querySelectorAll('#buttons-grid button');
+            
+            answerButtons.forEach((button, i) => {
+                // Reset the button to its default state before applying new content
+                button.className = 'quiz-button';
                 button.disabled = false;
-            }
+                
+                if (answerOptions[i]) {
+                    button.textContent = answerOptions[i];
+                }
+            });
             
             document.getElementById('result_label').textContent = "";
         }
@@ -336,16 +361,13 @@
                 document.getElementById('score_label').textContent = `✅ ${score}`;
                 button.classList.add('correct');
 
-                // 정답을 맞췄으므로 모든 버튼을 비활성화합니다.
-                const allButtons = document.getElementById('buttons-grid').children;
-                for(let btn of allButtons) {
+                const allButtons = document.querySelectorAll('#buttons-grid button');
+                allButtons.forEach(btn => {
                     btn.disabled = true;
-                }
-                // 잠시 후 다음 문제로 넘어갑니다.
+                });
+
                 setTimeout(nextQuiz, 1000); 
             } else {
-                // 오답인 경우, 해당 버튼만 비활성화하고 붉은색 표시는 하지 않습니다.
-                // 사용자는 정답을 찾을 때까지 계속 시도해야 합니다.
                 button.disabled = true;
             }
         }
